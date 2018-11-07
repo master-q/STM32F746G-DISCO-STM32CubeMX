@@ -89,6 +89,11 @@ extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
 
 /* USER CODE BEGIN 2 */
+int *__errno(void)
+{
+	static int my_errno = 0;
+	return &my_errno;
+}
 
 /* USER CODE END 2 */
 
