@@ -314,13 +314,13 @@ AR = arm-none-eabi-ar
 SZ = arm-none-eabi-size
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
 #######################################
 # CFLAGS
 #######################################
 # macros for gcc
 AS_DEFS =
-C_DEFS = -DMBEDTLS_CONFIG_FILE="mbedtls_config.h" -D__weak="__attribute__\(\(weak\)\)" -D__packed="__attribute__\(\(__packed__\)\)" -DUSE_HAL_DRIVER -DSTM32F746xx
+C_DEFS = -DMBEDTLS_CONFIG_FILE="\"mbedtls_config.h\"" -D__weak="__attribute__((weak))" -D__packed="__attribute__((__packed__))" -DUSE_HAL_DRIVER -DSTM32F746xx
 # includes for gcc
 AS_INCLUDES =
 C_INCLUDES = -ISTemWin/Target
@@ -346,16 +346,16 @@ C_INCLUDES += -IMiddlewares/Third_Party/LibJPEG/include
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
 C_INCLUDES += -IMiddlewares/Third_Party/FreeRTOS/Source/include
-C_INCLUDES += -IMiddlewares/Third_Party/mbedTLS/include/mbedtls
+C_INCLUDES += -IMiddlewares/Third_Party/mbedTLS/include
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/posix
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/posix/sys
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/netif
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/netif/ppp
-C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/lwip
+C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/lwip/apps
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/lwip/priv
 C_INCLUDES += -IMiddlewares/Third_Party/LwIP/src/include/lwip/prot
-C_INCLUDES += -IMiddlewares/Third_Party/LwIP/system/arch
+C_INCLUDES += -IMiddlewares/Third_Party/LwIP/system
 C_INCLUDES += -IMiddlewares/ST/STM32_Audio/Addons/PDM/Inc
 C_INCLUDES += -IMiddlewares/ST/STemWin/inc
 C_INCLUDES += -IMiddlewares/ST/STM32_USB_Host_Library/Core/Inc
@@ -375,7 +375,10 @@ CFLAGS += -std=c99 -MD -MP -MF $(BUILD_DIR)/.dep/$(@F).d
 # link script
 LDSCRIPT = STM32F746NGHx_FLASH.ld
 # libraries
-LIBS =
+LIBS = \
+  Middlewares/ST/STemWin/Lib/STemWin540_CM7_OS_GCC_ot_ARGB.a \
+  Middlewares/ST/STM32_Audio/Addons/PDM/Lib/libPDMFilter_CM7_GCC.a
+
 LIBDIR =
 LDFLAGS = -mthumb -mcpu=cortex-m7 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
@@ -392,7 +395,7 @@ vpath %.c $(sort $(dir $(C_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
@@ -404,10 +407,10 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
+	$(BIN) $< $@
+
 $(BUILD_DIR):
 	mkdir -p $@/.dep
 

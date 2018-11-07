@@ -95,7 +95,7 @@ extern int __io_getchar(void) __attribute__((weak));
 /* USER CODE BEGIN 3 */
 caddr_t _sbrk(int incr)
 {
-	extern char end asm("end");
+	extern char end;
 	static char *heap_end;
 	char *prev_heap_end,*min_stack_ptr;
 
