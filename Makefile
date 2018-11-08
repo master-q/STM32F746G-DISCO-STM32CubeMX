@@ -312,6 +312,7 @@ AS = arm-none-eabi-gcc -x assembler-with-cpp
 CP = arm-none-eabi-objcopy
 AR = arm-none-eabi-ar
 SZ = arm-none-eabi-size
+GDB = arm-none-eabi-gdb
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
 
@@ -419,12 +420,19 @@ $(BUILD_DIR):
 #######################################
 clean:
 	-rm -fR $(BUILD_DIR)
-  
+
+#######################################
+# debug
+#######################################
+gdbwrite:
+	@pgrep st-util > /dev/null || (echo '### Run "st-util"' && false)
+	$(GDB) -x gdbwrite.boot $(BUILD_DIR)/$(TARGET).elf
+
 #######################################
 # dependencies
 #######################################
 -include $(shell mkdir -p $(BUILD_DIR)/.dep 2>/dev/null) $(wildcard $(BUILD_DIR)/.dep/*)
 
-.PHONY: clean all
+.PHONY: clean all gdbwrite
 
 # *** EOF ***
